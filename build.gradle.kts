@@ -65,10 +65,10 @@ tasks {
         dontoptimize()
     }
     build {
-        dependsOn(reobfJar, shadowJar)
+        dependsOn(reobfJar, "shrink")
     }
     publish {
-        dependsOn(reobfJar, shadowJar)
+        dependsOn(reobfJar, "shrink")
     }
     withType<JavaCompile> {
         options.encoding = "UTF-8"
@@ -97,7 +97,7 @@ publishing {
     publications {
         publications.create<MavenPublication>("mavenJava") {
             artifacts {
-                artifact(tasks.getByName("shadowJar").outputs.files.singleFile)
+                artifact(tasks.getByName("shrink").outputs.files.singleFile)
             }
         }
     }
