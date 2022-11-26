@@ -18,7 +18,7 @@ plugins {
     id("io.papermc.paperweight.userdev").version("1.3.8")
 }
 group = "dev.ckateptb.minecraft"
-version = "1.0.0-SNAPSHOT"
+version = "1.0.1-SNAPSHOT"
 
 val rootPackage = "${project.group}.${project.name.toLowerCase()}"
 val internal = "${rootPackage}.internal"
@@ -65,10 +65,10 @@ tasks {
         dontoptimize()
     }
     build {
-        dependsOn(reobfJar, "shrink")
+        dependsOn(reobfJar, shadowJar)
     }
     publish {
-        dependsOn(reobfJar, "shrink")
+        dependsOn(reobfJar, shadowJar)
     }
     withType<JavaCompile> {
         options.encoding = "UTF-8"
