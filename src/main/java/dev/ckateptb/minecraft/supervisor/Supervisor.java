@@ -27,8 +27,8 @@ public class Supervisor extends JavaPlugin {
     private final Map<Plugin, Set<Runnable>> executeOnEnable = new ConcurrentHashMap<>();
 
     public Supervisor() {
+        IoC.registerBean(this, Supervisor.class);
         IoC.scan(Supervisor.class);
-        IoC.registerBean(this);
         final var commandCoordinator = AsynchronousCommandExecutionCoordinator.<CommandSender>newBuilder().build();
         EventBus.GLOBAL.registerEventHandler(ComponentRegisterEvent.class, event -> {
             Object instance = event.getInstance();
