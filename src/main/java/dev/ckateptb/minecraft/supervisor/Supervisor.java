@@ -11,6 +11,7 @@ import cloud.commandframework.paper.PaperCommandManager;
 import dev.ckateptb.common.tableclothcontainer.IoC;
 import dev.ckateptb.common.tableclothcontainer.event.ComponentRegisterEvent;
 import dev.ckateptb.common.tableclothevent.EventBus;
+import dev.ckateptb.minecraft.supervisor.holder.CommandManagerHolder;
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
@@ -36,7 +37,13 @@ public class Supervisor extends JavaPlugin {
                 Plugin plugin = command.getPlugin();
                 executeOnEnable.computeIfAbsent(plugin, key -> new HashSet<>()).add(() -> {
                     try {
-                        PaperCommandManager<CommandSender> manager = PaperCommandManager.createNative(plugin, commandCoordinator);
+                        PaperCommandManager<CommandSender> manager;
+                        if (plugin instanceof CommandManagerHolder holder) {
+                            manager = holder.getCommandManager();
+                            if (manager == null) {
+                                holder.setCommandManager(manager = PaperCommandManager.createNative(plugin, commandCoordinator));
+                            }
+                        } else manager = PaperCommandManager.createNative(plugin, commandCoordinator);
                         if (manager.hasCapability(CloudBukkitCapabilities.BRIGADIER)) {
                             manager.registerBrigadier();
                         }
