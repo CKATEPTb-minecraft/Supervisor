@@ -2,8 +2,9 @@ package dev.ckateptb.minecraft.supervisor;
 
 import cloud.commandframework.annotations.AnnotationParser;
 import cloud.commandframework.arguments.parser.ParserParameters;
+import cloud.commandframework.arguments.parser.ParserRegistry;
+import cloud.commandframework.bukkit.BukkitCommandManager;
 import cloud.commandframework.bukkit.CloudBukkitCapabilities;
-import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.meta.SimpleCommandMeta;
 import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
@@ -11,7 +12,6 @@ import cloud.commandframework.paper.PaperCommandManager;
 import dev.ckateptb.common.tableclothcontainer.IoC;
 import dev.ckateptb.common.tableclothcontainer.event.ComponentRegisterEvent;
 import dev.ckateptb.common.tableclothevent.EventBus;
-import dev.ckateptb.minecraft.supervisor.holder.CommandManagerHolder;
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
@@ -30,25 +30,20 @@ public class Supervisor extends JavaPlugin {
     public Supervisor() {
         IoC.registerBean(this, Supervisor.class);
         IoC.scan(Supervisor.class);
-        final var commandCoordinator = AsynchronousCommandExecutionCoordinator.<CommandSender>newBuilder().build();
         EventBus.GLOBAL.registerEventHandler(ComponentRegisterEvent.class, event -> {
             Object instance = event.getInstance();
             if (instance instanceof Command<? extends Plugin> command) {
                 Plugin plugin = command.getPlugin();
                 executeOnEnable.computeIfAbsent(plugin, key -> new HashSet<>()).add(() -> {
                     try {
-                        PaperCommandManager<CommandSender> manager;
-                        if (plugin instanceof CommandManagerHolder holder) {
-                            manager = holder.getCommandManager();
-                            if (manager == null) {
-                                holder.setCommandManager(manager = PaperCommandManager.createNative(plugin, commandCoordinator));
-                            }
-                        } else manager = PaperCommandManager.createNative(plugin, commandCoordinator);
+                        BukkitCommandManager<CommandSender> manager = command.createCommandManager();
+                        ParserRegistry<CommandSender> registry = manager.parserRegistry();
+                        command.parserRegistry(registry);
                         if (manager.hasCapability(CloudBukkitCapabilities.BRIGADIER)) {
                             manager.registerBrigadier();
                         }
-                        if (manager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
-                            manager.registerAsynchronousCompletions();
+                        if (manager instanceof PaperCommandManager<CommandSender> paperManager && manager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
+                            paperManager.registerAsynchronousCompletions();
                         }
                         Function<ParserParameters, CommandMeta> noDescription = sender -> SimpleCommandMeta.builder()
                                 .with(CommandMeta.DESCRIPTION, "No description")
