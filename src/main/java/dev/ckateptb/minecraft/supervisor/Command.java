@@ -15,15 +15,7 @@ public interface Command<P extends Plugin> {
     }
 
     default BukkitCommandManager<CommandSender> createCommandManager() throws Exception {
-        return BukkitCommandManager.createNative(this.getPlugin(),
+        return PaperCommandManager.createNative(this.getPlugin(),
                 AsynchronousCommandExecutionCoordinator.<CommandSender>newBuilder().build());
-    }
-
-    public interface PaperCommand<P extends Plugin> extends Command<P> {
-        @Override
-        default BukkitCommandManager<CommandSender> createCommandManager() throws Exception {
-            return PaperCommandManager.createNative(this.getPlugin(),
-                    AsynchronousCommandExecutionCoordinator.<CommandSender>newBuilder().build());
-        }
     }
 }
