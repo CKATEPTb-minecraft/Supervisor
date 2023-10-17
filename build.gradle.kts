@@ -18,7 +18,7 @@ plugins {
     id("io.papermc.paperweight.userdev").version("1.3.8")
 }
 group = "dev.ckateptb.minecraft"
-version = "1.0.5-SNAPSHOT"
+version = "1.0.6-SNAPSHOT"
 
 val rootPackage = "${project.group}.${project.name.toLowerCase()}"
 val internal = "${rootPackage}.internal"
@@ -31,14 +31,14 @@ repositories {
 }
 
 dependencies {
-    paperDevBundle("1.19.2-R0.1-SNAPSHOT")
+    paperDevBundle("1.20.2-R0.1-SNAPSHOT")
 
     compileOnly("dev.ckateptb.minecraft:Nicotine:2.0.0-SNAPSHOT")
 
     implementation("me.lucko:commodore:2.2")
-    implementation("cloud.commandframework:cloud-paper:1.7.1")
-    implementation("cloud.commandframework:cloud-minecraft-extras:1.7.1")
-    implementation("cloud.commandframework:cloud-annotations:1.7.1")
+    implementation("cloud.commandframework:cloud-paper:1.8.4")
+    implementation("cloud.commandframework:cloud-minecraft-extras:1.8.4")
+    implementation("cloud.commandframework:cloud-annotations:1.8.4")
 
     compileOnly("org.projectlombok:lombok:1.18.28")
     annotationProcessor("org.projectlombok:lombok:1.18.28")
