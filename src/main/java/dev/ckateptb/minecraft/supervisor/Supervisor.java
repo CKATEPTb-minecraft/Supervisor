@@ -39,11 +39,11 @@ public class Supervisor extends JavaPlugin {
                         BukkitCommandManager<CommandSender> manager = command.createCommandManager();
                         ParserRegistry<CommandSender> registry = manager.parserRegistry();
                         command.parserRegistry(registry);
-                        if (manager.hasCapability(CloudBukkitCapabilities.BRIGADIER)) {
-                            manager.registerBrigadier();
-                        }
-                        if (manager instanceof PaperCommandManager<CommandSender> paperManager && manager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
-                            paperManager.registerAsynchronousCompletions();
+                        if (manager instanceof PaperCommandManager<CommandSender> paperManager) {
+                            paperManager.registerBrigadier();
+                            if (manager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
+                                paperManager.registerAsynchronousCompletions();
+                            }
                         }
                         Function<ParserParameters, CommandMeta> noDescription = sender -> SimpleCommandMeta.builder()
                                 .with(CommandMeta.DESCRIPTION, "No description")
